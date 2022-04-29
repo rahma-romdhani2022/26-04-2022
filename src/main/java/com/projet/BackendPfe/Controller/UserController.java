@@ -57,6 +57,7 @@ import com.projet.BackendPfe.request.RegisterRequestGeneraliste;
 import com.projet.BackendPfe.services.ExpertService;
 import com.projet.BackendPfe.services.GeneralisteService;
 import com.projet.BackendPfe.services.UserDetailsImpl;
+import com.projet.BackendPfe.services.UserDetailsServiceImpl;
 import com.fasterxml.jackson.databind.JsonMappingException;
 
 import org.springframework.boot.json.JsonParseException;
@@ -71,7 +72,7 @@ public class UserController {
 	@Autowired	ExpertRepository expertRepository;
 	@Autowired	GeneralisteRepository genRepository;
 	@Autowired	AdminDigitalMangerRepository adminRepository;
-	
+	@Autowired UserDetailsServiceImpl service ; 
 	@Autowired
 	private ExpertService expertService ;
 	
@@ -103,55 +104,25 @@ public class UserController {
 		return ResponseEntity.ok(new JwtResponse(jwt, 
 												 userDetails.getId(), 
 												 userDetails.getUsername(), 
-												 userDetails.getEmail(),
+												 userDetails.getEmail() , 
 												 userDetails.getRole()
-												 
 											));
 	}
 	
 	
-	
-
-		/*****************Partie Admin ************/
+	@GetMapping("/user/{id}")
+	public User getUser(@PathVariable("id") long id) {
+		User user = userRepository.findById(id).get() ; 
+		if(user.getImage()==null) {
+			return user;
+		}
+		else {
+			user.setImage(service.compressZLib(user.getImage()));
+			return user ; 
+		}
 		
-		/*@PostMapping("/signupAdmin")
-		public ResponseEntity<?> registerUser(@Valid @RequestBody RegisterRequestAdmin signUpRequest) {
-			if (userRepository.existsByUsername(signUpRequest.getUsername())) {
-				return ResponseEntity
-						.badRequest()
-						.body(new Message("Error: Username is already taken!"));
-			}
+	}
 
-			if (userRepository.existsByEmail(signUpRequest.getEmail())) {
-				return ResponseEntity
-						.badRequest()
-						.body(new Message("Error: Email is already in use!"));
-			}
-
-			// Create new user's account
-			/*Date actuelle = new Date();
-			DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
-			String date = dateFormat.format(actuelle);
-			Date dateInscription = date ; 
-			AdminDigitalManager user = new AdminDigitalManager(signUpRequest.getUsername(), 
-								 signUpRequest.getEmail(),
-								 encoder.encode(signUpRequest.getPassword()),
-										 signUpRequest.getImage() , LocalDate.now());
-			adminRepository.save(user);
-
-			return ResponseEntity.ok(new Message("User registered successfully!"));
-		}	 */ 
-		
-		// rahy bsh twali put ll lokhrina update prodil expert et medecin 
-	    @PostMapping("/addP")
-	    public String saveProduct(@RequestParam("file") MultipartFile file,
-	    		@RequestParam("pname") String name,
-	    		@RequestParam("price") int price,
-	    		@RequestParam("desc") String desc)
-	    {
-	    	//productService.saveProductToDB(file, name, desc, price);
-	    	return "redirect:/listProducts.html";
-	    }
 	    /****************** Test put ************/
 	    @PutMapping( "/updateEx/{id}")
 		 public ResponseEntity<Message> saveUser (@PathVariable ("id") long id , @RequestParam("file") MultipartFile file,
@@ -165,97 +136,6 @@ public class UserController {
 	        	return new ResponseEntity<Message>(new Message ("Expert  savrd "),HttpStatus.OK);	
 		 }
 
-		
-		  /****** partie de projet 
-	 @GetMapping("/users")
-	  public List<User> getAllUtilisateur() {
-	    System.out.println("Get all Utilisateur...");
-	 
-	    List<User> Utilisateur = new ArrayList<>();
-	    repository.findAll().forEach(Utilisateur::add);
-	 
-	    return Utilisateur;	
-	  }
-
-	@GetMapping("/generaliste/{id}")
-	public ResponseEntity<Generaliste> getGenById(@PathVariable(value = "id") long UtilisateurId)
-			throws ResourceNotFoundException {
-		Generaliste Utilisateur = genRepository.findById(UtilisateurId)
-				.orElseThrow(() -> new ResourceNotFoundException("Utilisateur not found for this id : " + UtilisateurId));
-		return ResponseEntity.ok().body(Utilisateur);
-	}
-	@GetMapping("/expert/{id}")
-	public ResponseEntity<Expert> getExpertById(@PathVariable(value = "id") long UtilisateurId)
-			throws ResourceNotFoundException {
-Expert Utilisateur = expertRepository.findById(UtilisateurId)
-				.orElseThrow(() -> new ResourceNotFoundException("Utilisateur not found for this id : " + UtilisateurId));
-		return ResponseEntity.ok().body(Utilisateur);
-	}
-
-	//crud
-	 
-	
-	
-	
-		@DeleteMapping("/users/{id}")
-	public Map<String, Boolean> deleteUtilisateur(@PathVariable(value = "id") Long UtilisateurId)
-			throws ResourceNotFoundException {
-		User Utilisateur = repository.findById(UtilisateurId)
-				.orElseThrow(() -> new ResourceNotFoundException("Utilisateur not found  id :: " + UtilisateurId));
-
-		repository.delete(Utilisateur);
-		Map<String, Boolean> response = new HashMap<>();
-		response.put("deleted", Boolean.TRUE);
-		return response;
-	}
-	  
-	 
-	  @DeleteMapping("/users/delete")
-	  public ResponseEntity<String> deleteAllUtilisateur() {
-	    System.out.println("Delete All Utilisateur...");
-	 
-	    repository.deleteAll();
-	 
-	    return new ResponseEntity<>("All Utilisateurs have been deleted!", HttpStatus.OK);
-	  }
-	 
-	
-
-	 /*@PutMapping("/Generaliste/{id}")
-	  public String updateGeneraliste(@PathVariable("id") long id, @RequestParam("image") MultipartFile image,
-	    	   	 //@RequestParam("username") String username,
-	    		// @RequestParam("email") int email,
-	    		 @RequestParam("gender") String gender,
-	    		 @RequestParam("telephone") long telephone) {
-	    System.out.println("Update Utilisateur with ID = " + id + "...");
-	 
-	    Optional<Generaliste> UtilisateurInfo = genRepository.findById(id);
-
-	    	Generaliste utilisateur = UtilisateurInfo.get();
-	    	utilisateur.setTelephone(utilisateur.getTelephone());
-	    	utilisateur.setGender(utilisateur.getGender());
-	    	      //  utilisateur.getEmail();
-	        // utilisateur.getUsername();
-	    	generalisteService.saveGeneraliste(id , image, utilisateur.getGender(), utilisateur.getTelephone());
-	      return ("Done !!!");
-	    } */
-	 
-		/*@PutMapping("/updateGeneraliste/{id}")
-		 public String updateExpert(@PathVariable("id") long id,
-													 @RequestParam("image") MultipartFile image,
-										    	   	 //@RequestParam("username") String username,
-										    		// @RequestParam("email") int email,
-										    		 @RequestParam("gender") String gender,
-										    		 @RequestParam("telephone") long telephone) {
-			 Optional<Generaliste> expertA = genRepository.findById(id);
-
-			 Generaliste expertP = expertA.get();
-		        expertP.setTelephone(expertP.getTelephone());
-		        expertP.setGender(expertP.getGender());
-		        generalisteService.saveGeneraliste(id , image, expertP.getGender(), expertP.getTelephone());
-			    	return "redirect:/listProducts.html";
-			    }*/
 		  
-		    
-		
+		  
 }

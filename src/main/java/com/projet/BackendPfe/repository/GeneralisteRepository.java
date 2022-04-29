@@ -1,5 +1,6 @@
 package com.projet.BackendPfe.repository;
 
+import java.util.List;
 import java.util.Optional;
 
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -19,5 +20,5 @@ public interface GeneralisteRepository extends JpaRepository<Generaliste, Long>{
 	Boolean existsByEmail(String email);
 	
 	Optional<Generaliste> findByImage(String image);
-
+	List<Generaliste> findByRole(String role);
 }

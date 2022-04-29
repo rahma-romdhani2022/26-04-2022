@@ -71,20 +71,20 @@ private LocalDate dateConsult;
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private long id;
-	private  String demandeAvisD , demandeAvisG ; 
-	public String getDemandeAvisD() {
+	private  int  demandeAvisD , demandeAvisG ; 
+	public int getDemandeAvisD() {
 		return demandeAvisD;
 	}
 
-	public void setDemandeAvisD(String demandeAvisD) {
+	public void setDemandeAvisD(int demandeAvisD) {
 		this.demandeAvisD = demandeAvisD;
 	}
 
-	public String getDemandeAvisG() {
+	public int getDemandeAvisG() {
 		return demandeAvisG;
 	}
 
-	public void setDemandeAvisG(String demandeAvisG) {
+	public void setDemandeAvisG(int demandeAvisG) {
 		this.demandeAvisG = demandeAvisG;
 	}
 

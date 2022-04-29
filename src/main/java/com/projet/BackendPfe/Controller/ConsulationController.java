@@ -57,10 +57,17 @@ public class ConsulationController {
     	for(Consultation consult :liste) {
     		if((consult.getAutoDetection().getAvisExpert().getExpert().getId())==(expert.getId())) {
     			resultat.add(consult);
-    			return resultat ; 
+  
     		}
     	}
     	return resultat ; 
+    }
+    
+    @GetMapping("/historiquesss")
+    public List<Consultation> getHistoriquesExpertXcc(){
+    	List<Consultation> liste = repository.findAll();
+    	List<Consultation> resultat= new ArrayList<>() ; 	
+    	return liste ; 
     }
     
     // les 2 attributes hrthom tabin generaliste 
@@ -68,14 +75,14 @@ public class ConsulationController {
 public Consultation updateVariableDemandeAvisDroite(@PathVariable("idConsultation") long idConsultation )
 {
     Consultation consult = repository.findById(idConsultation).get()	;
-    consult.setDemandeAvisD("1");
+    consult.setDemandeAvisD(1);
     return consult ; 
 }
     @PutMapping("/demandeAvisG/{idConsultation}")
     public Consultation updateVariableDemandeAvisGauche(@PathVariable("idConsultation") long idConsultation )
     {
         Consultation consult = repository.findById(idConsultation).get()	;
-        consult.setDemandeAvisG("1");
+        consult.setDemandeAvisG(1);
         return consult ; 
     }
     @GetMapping("/{idConsultation}")
@@ -409,7 +416,121 @@ return conster; }
           this.text = "oeil gauche"
         }
         */
+	@GetMapping("test")
+	public List<Consultation> getAllDemandesss (){
+		List<Consultation> liste = repository.findAll();
+		List<Consultation> resultat= new ArrayList<>() ; 
+		for(Consultation consult :liste) {
+			if((consult.getAutoDetection().getAvisExpert()==null)) {
+				if((consult.getDemandeAvisD()==1 && consult.getDemandeAvisG()==0)) {
+				     resultat.add(consult);}
+				if((consult.getDemandeAvisD()==0 && consult.getDemandeAvisG()==1)) {
+				     resultat.add(consult);}
+			  
+				if((consult.getDemandeAvisD()==1 || consult.getDemandeAvisG()==1)) {
+					if(resultat.contains(consult)) {
+						 resultat.add(consult);
+				    }
+					}
+			
+		}
+		
+		}
+		return resultat ; 
+	}
+	/*@GetMapping("/getAll")
+	public List<Consultation> getttt (){
+		List<Consultation> liste_Droite = repository.findByDemandeAvisD(1) ; 
+		List<Consultation> liste1 = new ArrayList<Consultation>();
+		for(Consultation consult :liste_Droite) {
+			if((consult.getAutoDetection().getAvisExpert()==null)) {
+				
+				liste1.add(consult)  ; 
+			}
+			}
+		List<Consultation> liste_Gauche = repository.findByDemandeAvisG(1) ; 
+		List<Consultation> liste2 = new ArrayList<Consultation>();
+		for(Consultation consult :liste_Gauche) {
+			if((consult.getAutoDetection().getAvisExpert()==null)) {
+				
+				liste2.add(consult)  ; 
+			}
+			}
+		liste1.addAll(liste2) ;
+		List<Consultation> resultats =liste1   ; 
+		return resultats ; 
+	}*/
 	
+	@GetMapping("/getAll")
+	public List<Consultation> getttt (){
+		List<Consultation> liste_Droite = repository.findByDemandeAvisD(1) ; 
+		List<Consultation> liste1 = new ArrayList<Consultation>();// Empty
+		for(Consultation consult :liste_Droite) {
+			if((consult.getAutoDetection().getAvisExpert()==null)) {
+				
+				liste1.add(consult)  ; 
+			}
+			else {
+				// dejaa avis mtaa gauche existe 
+				if((consult.getAutoDetection().getAvisExpert().getMaladieDroite()== null)
+						&&(consult.getAutoDetection().getAvisExpert().getGraviteDroite()==0 )) {
+					
+					 liste1.add(consult)  ; 
+				}
+			}
+			}
+		List<Consultation> liste_Gauche = repository.findByDemandeAvisG(1) ; 
+		List<Consultation> liste2 = new ArrayList<Consultation>();
+		for(Consultation consu :liste_Gauche) {
+			if((consu.getAutoDetection().getAvisExpert()==null)) {
+				
+				liste2.add(consu)  ; 
+			}
+			else {
+				if((consu.getAutoDetection().getAvisExpert().getMaladieGauche()==null)
+						&&(consu.getAutoDetection().getAvisExpert().getGraviteGauche()==0 )) {
+					
+					 liste2.add(consu)  ; 
+				}
+			}
+			}
+		liste1.addAll(liste2) ;
+		List<Consultation> resultats =new ArrayList<Consultation>() ; 
+		resultats=liste1; 
+		return resultats ; 
+	}
+	
+	
+	/*@GetMapping("/getAll")
+	public List<Consultation> getttt1 (){
+		List<Consultation> liste_Droite = repository.findByDemandeAvisD(1) ; 
+		List<Consultation> liste1 = new ArrayList<Consultation>();
+		for(Consultation consult :liste_Droite) {
+			 
+		
+			if((consult.getAutoDetection().getAvisExpert().equals(null)){
+				if((consult.getAutoDetection().getAvisExpert().equals(null)){
+			}
+					(consult.getAutoDetection().getAvisExpert().equals(null)getMaladieDroite().equals(null))
+				&& (consult.getAutoDetection().getAvisExpert().getGraviteDroite()==0)) {
+				liste1.add(consult)  ; 
+			}
+         }
+	
+		List<Consultation> liste_Gauche = repository.findByDemandeAvisG(1) ; 
+		List<Consultation> liste2 = new ArrayList<Consultation>();
+		for(Consultation cons :liste_Gauche) {
+			 
+		     		
+		 			if((cons.getAutoDetection().getAvisExpert().getMaladieGauche().equals(null))
+		 				&& (cons.getAutoDetection().getAvisExpert().getGraviteGauche()==0)) {
+		 				liste1.add(cons)  ; 
+		 			}
+		          }
+		liste1.addAll(liste2) ;
+		List<Consultation> resultats =liste1   ; 
+		return resultats ; 
 }
-	
+	*/
+}
 	

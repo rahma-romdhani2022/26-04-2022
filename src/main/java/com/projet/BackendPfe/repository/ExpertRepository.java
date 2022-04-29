@@ -14,7 +14,7 @@ public interface ExpertRepository extends JpaRepository<Expert, Long>{
 	Expert findByUsername(String username);
 	Expert findByEmail(String email);
 	Boolean existsByUsername(String username);
-   Optional<Expert> findByImage(String image);
+    Optional<Expert> findByImage(String image);
 	Boolean existsByEmail(String email);
 	List<Expert> findByRole(String role);
 	

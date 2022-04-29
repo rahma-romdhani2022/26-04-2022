@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Optional;
@@ -32,14 +33,17 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.projet.BackendPfe.Entity.AdminMedicalManager;
+import com.projet.BackendPfe.Entity.Consultation;
 import com.projet.BackendPfe.Entity.Expert;
 import com.projet.BackendPfe.Entity.Generaliste;
 import com.projet.BackendPfe.Entity.IAModel;
+import com.projet.BackendPfe.Entity.Patient;
 import com.projet.BackendPfe.config.JwtTokenUtil;
 import com.projet.BackendPfe.domaine.JwtResponse;
 import com.projet.BackendPfe.domaine.Message;
 import com.projet.BackendPfe.exception.ResourceNotFoundException;
 import com.projet.BackendPfe.repository.AdminMedicalManagerRepository;
+import com.projet.BackendPfe.repository.ConsultationRepository;
 import com.projet.BackendPfe.repository.ExpertRepository;
 import com.projet.BackendPfe.repository.UserRepository;
 import com.projet.BackendPfe.request.LoginRequest;
@@ -56,6 +60,7 @@ public class ExpertController {
 	@Autowired 	AuthenticationManager authenticationManager;
 	@Autowired	ExpertRepository expertRepository;
 	@Autowired	UserRepository userRepository;
+	@Autowired  ConsultationRepository repository ;
 	@Autowired AdminMedicalManagerRepository  repositoryAdminMedical ;
 	@Autowired	private ExpertService expertService ;
 	@Autowired	PasswordEncoder encoder;
@@ -205,6 +210,63 @@ expertRepository.save(expert1);
 			return expertRepository.findByRole(role);
 		}
 
+		
+		@GetMapping("/patientsExpert/{idExpert}")
+     public List<Patient> getAllPatientsDr(@PathVariable("idExpert") long idExpert){
+		
+		   	Expert expert = expertRepository.findById(idExpert).get();	
+	    	List<Consultation> liste = repository.findAll();
+	    	List<Patient> res= new ArrayList<>() ; 
+	    	
+	    	for(Consultation consult :liste) {
+	    		System.out.println(expert);
+	    		if((consult.getAutoDetection().getAvisExpert().getExpert().getId())==(expert.getId())) {
+	    			res.add(consult.getPatient());
+	    			return res ; 
+	    		}
+	    	}
+	    
+	    	return res ; 
+	    	
+		}
+		
+@GetMapping("/demandes")
+public List<Consultation> getAllDemandes(){
+	    	List<Consultation> liste = repository.findAll();
+	    	List<Consultation> resultat= new ArrayList<>() ; 
+	    	for(Consultation consult :liste) {
+	    		if((consult.getDemandeAvisD()==1 || consult.getDemandeAvisG()==1)){
+	    			if((consult.getAutoDetection().getAvisExpert()==null)) {
+	    				resultat.add(consult);
+	    				
+	    			
+	    			}
+	    		}
+	    	}
+	    	return resultat ; 
+}
 
+@GetMapping("test")
+public List<Consultation> getAllDemandesss (){
+	List<Consultation> liste = repository.findAll();
+	List<Consultation> resultat= new ArrayList<>() ; 
+	for(Consultation consult :liste) {
+		if((consult.getAutoDetection().getAvisExpert()==null)) {
+			if((consult.getDemandeAvisD()==1 && consult.getDemandeAvisG()==0)) {
+			     resultat.add(consult);}
+			if((consult.getDemandeAvisD()==0 && consult.getDemandeAvisG()==1)) {
+			     resultat.add(consult);}
+		  
+			if((consult.getDemandeAvisD()==1 || consult.getDemandeAvisG()==1)) {
+				if(resultat.contains(consult)) {
+					 resultat.add(consult);
+			    }
+				}
+		
+	}
+	
+	}
+	return resultat ; 
+}
  }
 

@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+import javax.persistence.CascadeType;
 import javax.persistence.DiscriminatorValue;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
@@ -28,11 +29,13 @@ public class Generaliste extends User {
 		this.specialite = specialite;
 	}
 
-	@OneToMany(targetEntity=Consultation.class, mappedBy = "generaliste",fetch=FetchType.LAZY)
+	@OneToMany(targetEntity=Consultation.class, mappedBy = "generaliste"/*, cascade = CascadeType.ALL*/
+			,cascade={CascadeType.PERSIST, CascadeType.REMOVE},
+		      orphanRemoval=true)
 	
 	private List<Patient>liste=new ArrayList<Patient>();
 	  
-	@OneToMany(targetEntity=Consultation.class, mappedBy = "generaliste",fetch=FetchType.LAZY)
+	@OneToMany(targetEntity=Consultation.class, mappedBy = "generaliste", cascade = CascadeType.ALL)
 	private List<Consultation>liste1=new ArrayList<Consultation>();
 	  
 	 public Generaliste(String username, String email, String password, String gender, long telephone , byte[] image , LocalDate date_inscription  , String role ,String specialite ) {

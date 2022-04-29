@@ -31,7 +31,7 @@ import com.projet.BackendPfe.services.PatientService;
 
 @CrossOrigin("*")
 @RestController
-@RequestMapping("/api")
+@RequestMapping("/patient")
 public class PatientController {
 	
 	@Autowired GeneralisteRepository medecinRepository;
@@ -45,9 +45,15 @@ public class PatientController {
 	@Autowired 
 	PatientService ps;
 
-	
+	@GetMapping("/all")
+	public List<Patient> getAll(){
+		 List<Patient> patients = pr.findAll();
+		  
+		 
+		    return   patients;
+	} 
 	@GetMapping("/patiente/{id}")
-	public List<Patient> getAllProducts(@PathVariable("id") @ModelAttribute("id") long id){
+	public List<Patient> getAll(@PathVariable("id") @ModelAttribute("id") long id){
          //pr.findById(id);
 		 List<Patient> Utilisateur = new ArrayList<>();
 		  
@@ -110,6 +116,10 @@ public class PatientController {
 	    	
 	      return new ResponseEntity<>(pr.save(utilisateur), HttpStatus.OK);
 	    } 	
-	 
+	 @GetMapping("/get/{id}")
+		public Patient  getPatientById(@PathVariable("id") long id){
+		Patient patient = 	pr.findById(id).get();
+			    return   patient;
+		} 
 	
 	}
